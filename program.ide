@@ -1,67 +1,66 @@
-#include <WiFiNINA.h>
-#include <ArduinoHttpClient.h>
+#include <WiFiNINA.h>            // Include WiFiNINA library to handle Wi-Fi connections
+#include <ArduinoHttpClient.h>    // Include HttpClient library to make HTTP requests
 
-char ssid[] = "arsh"; 
-char pass[] = "12345678";  
+char ssid[] = "arsh";              
+char pass[] = "12345678";         
 
-const int lightSensorPin = A4; 
-int threshold = 500;  
+const int lightSensorPin = A4;    // Pin connected to light sensor
+int threshold = 500;              // Light level threshold for triggering IFTTT event
 
-char serverAddress[] = "maker.ifttt.com";  r
-String eventName = "Light_trigger"; 
+char serverAddress[] = "maker.ifttt.com";  // IFTTT server address
+String eventName = "Light_trigger";        // IFTTT event name
 
-const String IFTTT_Key = "gX6g80rGtiYOWoqcL-7w9t7M1TVnlAyBcMVk8jtbOM4";  y
-s
-WiFiClient wifi;
-HttpClient client = HttpClient(wifi, serverAddress, 80);
+const String IFTTT_Key = "gX6g80rGtiYOWoqcL-7w9t7M1TVnlAyBcMVk8jtbOM4";  // Your unique IFTTT key
+WiFiClient wifi;                  // Create WiFi client object
+HttpClient client = HttpClient(wifi, serverAddress, 80);  // Create HTTP client with IFTTT server on port 80
 
 void setup() {
-  Serial.begin(9600);  
-  connectToWiFi();  
+  Serial.begin(9600);  // Initialize serial communication for debugging
+  connectToWiFi();     // Call function to connect to Wi-Fi
 }
 
 void loop() {
-  int lightLevel = analogRead(lightSensorPin);
+  int lightLevel = analogRead(lightSensorPin);  // Read light level from sensor
   Serial.print("Light Level: ");
-  Serial.println(lightLevel);  
+  Serial.println(lightLevel);  // Print light level for debugging
 
-  if (lightLevel > threshold) { 
-    triggerIFTTTEvent();  
-    delay(10000);  
+  if (lightLevel > threshold) {  // If light level exceeds threshold, trigger IFTTT event
+    triggerIFTTTEvent();         // Call function to send HTTP request to IFTTT
+    delay(10000);                // Wait for 10 seconds before the next reading
   }
 
-  delay(1000);  
+  delay(1000);  // Wait 1 second between readings
 }
 
 void connectToWiFi() {
   Serial.println("Connecting to WiFi...");
-  while (WiFi.begin(ssid, pass) != WL_CONNECTED) {
+  while (WiFi.begin(ssid, pass) != WL_CONNECTED) {  // Keep trying to connect to Wi-Fi
     Serial.print(".");
-    delay(1000); 
+    delay(1000);  // Wait 1 second between connection attempts
   }
   Serial.println("\nConnected to WiFi");
   Serial.print("IP Address: ");
-  Serial.println(WiFi.localIP());  
+  Serial.println(WiFi.localIP());  // Print the assigned IP address
 }
 
 void triggerIFTTTEvent() {
-  String url = "/trigger/" + eventName + "/with/key/" + IFTTT_Key;
+  String url = "/trigger/" + eventName + "/with/key/" + IFTTT_Key;  // Construct IFTTT request URL
 
   Serial.println("Sending request to IFTTT...");
-  client.get(url);  
+  client.get(url);  // Send GET request to the IFTTT server
 
-  int statusCode = client.responseStatusCode();  
-  String response = client.responseBody();  
+  int statusCode = client.responseStatusCode();  // Get HTTP response status code
+  String response = client.responseBody();       // Get HTTP response body
 
   Serial.print("Status code: ");
-  Serial.println(statusCode);  
+  Serial.println(statusCode);  // Print status code for debugging
 
-  if (statusCode == 200) {
+  if (statusCode == 200) {  // Check if status code is 200 (OK)
     Serial.println("Event triggered successfully!");
   } else {
     Serial.println("Failed to trigger event.");
   }
 
   Serial.print("Response: ");
-  Serial.println(response);  
+  Serial.println(response);  // Print response body for debugging
 }
