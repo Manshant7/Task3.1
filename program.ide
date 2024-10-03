@@ -10,7 +10,7 @@ int threshold = 500;              // Light level threshold for triggering IFTTT 
 char serverAddress[] = "maker.ifttt.com";  // IFTTT server address
 String eventName = "Light_trigger";        // IFTTT event name
 
-const String IFTTT_Key = "gX6g80rGtiYOWoqcL-7w9t7M1TVnlAyBcMVk8jtbOM4";  // Your unique IFTTT key
+const String IFTTT_Key = "gX6g80rGtiYOWoqcL-7w9t7M1TVnlAyBcMVk8jtbOM4";  // unique IFTTT key
 WiFiClient wifi;                  // Create WiFi client object
 HttpClient client = HttpClient(wifi, serverAddress, 80);  // Create HTTP client with IFTTT server on port 80
 
